@@ -52,8 +52,7 @@ void s21_remove_matrix(matrix_t *A) {
 }
 
 int s21_eq_matrix(matrix_t *A, matrix_t *B) {
-  if (!is_matrix_ok(A) || !is_matrix_ok(B) || !same_size(A, B))
-    return FAILURE;
+  if (!is_matrix_ok(A) || !is_matrix_ok(B) || !same_size(A, B)) return FAILURE;
 
   int status = SUCCESS;
   for (int i = 0; status == SUCCESS && i < A->rows; i++) {
@@ -210,13 +209,12 @@ int s21_calc_complements(matrix_t *A, matrix_t *result) {
         for (int j = 0; j < A->columns; j++) {
           matrix_t minor;
           double determinant = 0.0;
-          if ((status = create_minor_matrix(A, i, j, &minor)) != OK)
-            exit_flag = 1;
-
-          if ((status = s21_determinant(&minor, &determinant)) != OK) {
-            s21_remove_matrix(&minor);
-            exit_flag = 1;
-          }
+          exit_flag = ((status = create_minor_matrix(A, i, j, &minor))) != OK
+                          ? 1
+                          : exit_flag;
+          exit_flag = ((status = s21_determinant(&minor, &determinant))) != OK
+              ? (s21_remove_matrix(&minor)),
+          1 : exit_flag;
           result->matrix[i][j] = determinant * ((i + j) % 2 == 0 ? 1 : -1);
           s21_remove_matrix(&minor);
         }
